@@ -1,14 +1,14 @@
 #### INSTALLING PACKAGES ####
-#install.packages(c("bridgesampling", "coda", "rstan", "lbfgsb3c", "loo"))
-#library(bridgesampling)
-#library(coda)
-#library(rstan)
-#library(lbfgsb3c)
-#library(loo)
+# install.packages(c("bridgesampling", "coda", "rstan", "lbfgsb3c", "loo"))
+# library(bridgesampling)
+# library(coda)
+# library(rstan)
+# library(lbfgsb3c)
+# library(loo)
 
 #### READING IN FILES ####
-load("./RAMCore[asmt][v4.495].rdata") #ram database
-cols <- read.csv("./non_det_cols.csv", header <- FALSE)[, 1] #non-deterministic data sets
+load("./data_files/RAMCore[asmt][v4.495].rdata") #ram database
+cols <- read.csv("./data_files/non_det_cols.csv", header <- FALSE)[, 1] #non-deterministic data sets
    
 #### CONSTANTS ####
 num_rows <- 
@@ -31,10 +31,6 @@ bh_ml <- c()
 rk_ml <- c()
 pt_ml <- c()
 hs_ml <- c()
-
-hs_vs_bh_prob <- c()
-hs_vs_rk_prob <- c()
-hs_vs_pt_prob <- c()
 
 #### SORTING DATA ####
 #Creates a matrix of Biomass data and a matrix of Catch data with only overlapping entries.
@@ -77,7 +73,7 @@ for (i in 1:num_cols){
   
   #### BEVERTON-HOLT ####
   bh_fit <- stan(
-   file = "bh_model.stan",
+   file = "./models/bh_model.stan",
     data = data,
     chains = n_chains,
     warmup = warmups,
@@ -92,7 +88,7 @@ for (i in 1:num_cols){
   
   #### RICKER ####
   rk_fit <- stan(
-    file = "rk_model.stan",
+    file = "./models/rk_model.stan",
     data = data,
     chains = n_chains,
     warmup = warmups,
@@ -106,7 +102,7 @@ for (i in 1:num_cols){
 
   #### PELLA-TOMLINSON ####
   pt_fit <- stan(
-    file = "pt_model.stan",
+    file = "./models/pt_model.stan",
     data = data,
     chains = n_chains,
     warmup = warmups,
@@ -120,7 +116,7 @@ for (i in 1:num_cols){
   
   #### HOCKEY-STICK ####
   hs_fit <- stan(
-    file = "hs_model.stan",
+    file = "./models/hs_model.stan",
     data = data,
     chains = n_chains,
     warmup = warmups,
@@ -131,29 +127,16 @@ for (i in 1:num_cols){
   )
   hs_data <- append(hs_data, hs_fit)
   hs_ml <- append(hs_ml, exp(bridge_sampler(hs_fit)$logml))
-  
-  hs_vs_bh_prob <- hs_ml / (hs_ml + bh_ml)
-  hs_vs_rk_prob <- hs_ml / (hs_ml + rk_ml)
-  hs_vs_pt_prob <- hs_ml / (hs_ml + pt_ml)
 }
 
-save(bh_data, file = "bh_data.RData")
-save(rk_data, file = "rk_data.RData")
-save(pt_data, file = "pt_data.RData")
-save(hs_data, file = "hs_data.RData")
+save(bh_data, file = "./mcmc_data/bh_data.RData")
+save(rk_data, file = "./mcmc_data/rk_data.RData")
+save(pt_data, file = "./mcmc_data/pt_data.RData")
+save(hs_data, file = "./mcmc_data/hs_data.RData")
 
-jpeg(file = paste("./plots/hs_vs_bh_prob.jpeg"),
-     width = 600, height = 600)
-hist(hs_vs_bh_prob)
-dev.off()
+save(bh_ml, file = "./mcmc_data/bh_ml.RData")
+save(rk_ml, file = "./mcmc_data/rk_ml.RData")
+save(pt_ml, file = "./mcmc_data/pt_ml.RData")
+save(hs_ml, file = "./mcmc_data/hs_ml.RData")
 
-jpeg(file = paste("./plots/hs_vs_rk_prob.jpeg"),
-     width = 600, height = 600)
-hist(hs_vs_rk_prob)
-dev.off()
-
-jpeg(file = paste("./plots/hs_vs_pt_prob.jpeg"),
-     width = 600, height = 600)
-hist(hs_vs_pt_prob)
-dev.off()
 
