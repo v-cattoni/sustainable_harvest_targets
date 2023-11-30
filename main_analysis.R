@@ -33,9 +33,9 @@ for (i in 1:284){
   }
 }
 
-print("num hs more likely than bh = ", num_hs_vs_bh)
-print("num hs more likely than rk = ", num_hs_vs_rk)
-print("num hs more likely than pt = ", num_hs_vs_pt)
+cat("prop hs more likely than bh = ", num_hs_vs_bh/284)
+cat("prop hs more likely than rk = ", num_hs_vs_rk/284)
+cat("prop hs more likely than pt = ", num_hs_vs_pt/284)
 
 jpeg(file = paste("./plots/hs_vs_bh_prob.jpeg"),
      width = 600, height = 600)
