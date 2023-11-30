@@ -17,6 +17,26 @@ hs_vs_bh_prob <- hs_ml / (hs_ml + bh_ml)
 hs_vs_rk_prob <- hs_ml / (hs_ml + rk_ml)
 hs_vs_pt_prob <- hs_ml / (hs_ml + pt_ml)
 
+num_hs_vs_bh <- 0
+num_hs_vs_rk <- 0
+num_hs_vs_pt <- 0
+
+for (i in 1:284){
+  if(hs_vs_bh_prob[i] >= 0.5){
+    num_hs_vs_bh = num_hs_vs_bh + 1
+  }
+  if(hs_vs_rk_prob[i] >= 0.5){
+    num_hs_vs_rk = num_hs_vs_rk + 1
+  }
+  if(hs_vs_pt_prob[i] >= 0.5){
+    num_hs_vs_pt = num_hs_vs_pt + 1
+  }
+}
+
+print("num hs more likely than bh = ", num_hs_vs_bh)
+print("num hs more likely than rk = ", num_hs_vs_rk)
+print("num hs more likely than pt = ", num_hs_vs_pt)
+
 jpeg(file = paste("./plots/hs_vs_bh_prob.jpeg"),
      width = 600, height = 600)
 hist(hs_vs_bh_prob)
